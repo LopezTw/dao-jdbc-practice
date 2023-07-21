@@ -11,7 +11,7 @@ public class Program {
 		
 		Department obj =  new Department(1, "Books");
 		
-		Seller seller = new Seller(21, "Bob", "bob@gmail.com", new Date(), 3000.0, obj);
+		Seller seller = new Seller(21, "Bob", "bob@gmail.com", new Date(), 3000.0, obj); // obj mostra qual departamento que é
 		
 		
 		System.out.println(seller);
