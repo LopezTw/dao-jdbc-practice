@@ -55,19 +55,29 @@ public class SellerDaoJDBC implements SellerDao {
 			
 			st.setInt(1, id); // O primeiro (1) ponto de interrogaçao recebera como paramento o id 
 			rs = st.executeQuery();
+			
+			/**
+			 * 			IMPORTANTE ENTENDIMENTO:
+			 * 		
+			 * 		O ResulSet, nos traz os dados em formato de TABELA sendo um objeto com Linhas e Colunas (igual aparece no Workbench.
+			 * 		Só que como estamos progamando Orientado a Objetos, nos precisamos transformar esses dados em Objetos Associados !
+			 * 		Objetos Associados: são objetos que tem uma associação com outro ( Seller <-> Department ).
+			 * 		
+			 * 		Entao como estamos tratando de OOP, precisamos ter na memória do computador, Objetos Associados INSTANCIADOS em memória.
+			 * 
+			 * 		O IF abaixo, serve pra testar se recebeu algum resultado referente ao ID recebido la no inicio do método.
+			 * 		Se nao retonar nada, vai dar NULL e se retornar alguma informação (no caso as informações que constam na tabela),
+			 * 		teremos que navegar por esse resultado pra podermos instanciarmos os Objetos (No caso abaixo, o Seller com Department)
+			 * 		
+			 * 		
+			 */
+			
 			if (rs.next()) {
-				Department dep = new Department();
-				dep.setId(rs.getInt("DepartmentId"));
-				dep.setName(rs.getString("DepName"));
+				Department dep = instantiateDepartment(rs);				
+				Seller obj = instantiateSeller(rs, dep);
 				
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-				obj.setDepartment(dep);
 				return obj;
+				
 			}
 			return null;
 		}
@@ -78,6 +88,25 @@ public class SellerDaoJDBC implements SellerDao {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
+		
+	}
+
+	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep);
+		return obj;
+	}
+
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId"));
+		dep.setName(rs.getString("DepName"));
+		return dep;
 		
 	}
 
