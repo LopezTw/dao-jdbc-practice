@@ -5,12 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
 import model.dao.DepartmentDao;
 import model.entities.Department;
+
 
 
 public class DepartmentDaoJDBC implements DepartmentDao {
@@ -131,8 +135,44 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
 	@Override
 	public List<Department> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.prepareStatement(
+							"SELECT * " 
+							+ "FROM department ");
+
+			rs = st.executeQuery();
+
+			List<Department> list = new ArrayList<>();
+
+			Map<Integer, Department> map = new HashMap<>(); // Vai ser guardado qualquer Department que for instanciado
+
+			while (rs.next()) { // percorrer a lista enquanto tiver dados
+
+				Department dep = map.get(rs.getInt("Id"));  // tenta buscar um Department que possui algum
+															// Departamento com Id = ?;
+															// caso nao exista o valor especificado em ? ,
+															// retornará nulo !
+
+				if (dep == null) { // Caso seja null o valor pesquisado, vai ser instanciado o valor pesquisado e
+									// salvar o valor no map.
+					dep = instantiateDepartment(rs);
+					map.put(rs.getInt("Id"), dep);
+				}
+
+				
+				list.add(dep);
+
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 }
