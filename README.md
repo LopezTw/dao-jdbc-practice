@@ -12,6 +12,7 @@
 </br>
 - Inserção
 </br>
+</br>
 Além disso mostra como criar a conexão entre o JDBC e a IDE.
 </p>
 
